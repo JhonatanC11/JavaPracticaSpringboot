@@ -1,5 +1,7 @@
 package com.api.crudSinAyuda.services;
 
+import com.api.crudSinAyuda.exceptions.EmailAlreadyExistsException;
+import com.api.crudSinAyuda.exceptions.UserNotFoundException;
 import com.api.crudSinAyuda.models.UserModel;
 import com.api.crudSinAyuda.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class UserService {
     }
 
     public UserModel saveUser(UserModel user){
+        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+            throw new EmailAlreadyExistsException("El email ya está registrado");
+        }
         return userRepository.save(user);
     }
 
@@ -27,11 +32,16 @@ public class UserService {
 
     public UserModel updateById(UserModel request, Long id) {
         UserModel user = userRepository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Usuario con id " + id + " no encontrado"));
+                .orElseThrow(()-> new UserNotFoundException("Usuario con id " + id + " no encontrado"));
 
+        Optional<UserModel> emailOwner = userRepository.findByEmail(request.getEmail());
+        if (emailOwner.isPresent() && !emailOwner.get().getId().equals(id)){
+            throw new EmailAlreadyExistsException("El email ya está registrado");
+        }
         user.setFirstName(request.getFirstName());
         user.setLastName((request.getLastName()));
         user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
 
         return userRepository.save(user);
     }

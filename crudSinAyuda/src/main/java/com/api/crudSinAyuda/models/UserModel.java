@@ -1,6 +1,7 @@
 package com.api.crudSinAyuda.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "usuarios")
@@ -9,9 +10,21 @@ public class UserModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El nombre no puede estar vacío")
+    @Size(min = 2, max = 50, message = "El nombre debe de tener entre 2 y 50 caracteres")
     private String firstName;
+
+    @NotBlank(message = "El apellido no puede estar vacío")
+    @Size(min = 2, max = 50, message = "El nombre debe de tener entre 2 y 50 caracteres")
     private String lastName;
+
+    @NotBlank(message = "El email no puede estar vacío")
+    @Email(message = "Debe proporcionar un email válido")
+    @Size(max = 100, message = "El email no puede exceder los 100 caracteres")
     private String email;
+
+    @NotBlank(message = "El teléfono no puede estar vacío")
+    @Pattern(regexp = "^[0-9]+$", message = "Debe proporcionar un teléfono válido")
     private String phone;
 
     public Long getId() {

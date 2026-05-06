@@ -2,6 +2,7 @@ package com.api.crudSinAyuda.controllers;
 
 import com.api.crudSinAyuda.models.UserModel;
 import com.api.crudSinAyuda.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserModel> saveUser(@RequestBody UserModel user){
+    public ResponseEntity<UserModel> saveUser(@Valid @RequestBody UserModel user){
         UserModel saved = this.userService.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
@@ -35,13 +36,9 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<UserModel> updateUserById(@RequestBody UserModel request, @PathVariable("id") Long id){
-        try {
+    public ResponseEntity<UserModel> updateUserById(@Valid @RequestBody UserModel request, @PathVariable("id") Long id){
             UserModel updated = this.userService.updateById(request, id);
             return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @DeleteMapping(path = "/{id}")
