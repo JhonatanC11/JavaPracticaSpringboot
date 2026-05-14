@@ -1,5 +1,7 @@
 package com.api.crudSinAyuda.controllers;
 
+import com.api.crudSinAyuda.dtos.UserRequestDTO;
+import com.api.crudSinAyuda.dtos.UserResponseDTO;
 import com.api.crudSinAyuda.models.UserModel;
 import com.api.crudSinAyuda.services.UserService;
 import jakarta.validation.Valid;
@@ -18,26 +20,26 @@ public class UserController {
     UserService userService;
 
     @GetMapping
-    public List<UserModel> getUsers(){
+    public List<UserResponseDTO> getUsers(){
         return this.userService.getUsers();
     }
 
     @PostMapping
-    public ResponseEntity<UserModel> saveUser(@Valid @RequestBody UserModel user){
-        UserModel saved = this.userService.saveUser(user);
+    public ResponseEntity<UserResponseDTO> saveUser(@Valid @RequestBody UserRequestDTO user){
+        UserResponseDTO saved = this.userService.saveUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<UserModel> getUserById(@PathVariable("id") Long id){
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable("id") Long id){
         return this.userService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<UserModel> updateUserById(@Valid @RequestBody UserModel request, @PathVariable("id") Long id){
-            UserModel updated = this.userService.updateById(request, id);
+    public ResponseEntity<UserResponseDTO> updateUserById(@Valid @RequestBody UserRequestDTO request, @PathVariable("id") Long id){
+            UserResponseDTO updated = this.userService.updateById(request, id);
             return ResponseEntity.ok(updated);
     }
 

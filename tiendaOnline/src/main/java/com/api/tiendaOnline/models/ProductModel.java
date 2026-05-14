@@ -2,14 +2,17 @@ package com.api.tiendaOnline.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "products")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +37,5 @@ public class ProductModel {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<CategoryModel> categories = new HashSet<>();
-
 
 }
