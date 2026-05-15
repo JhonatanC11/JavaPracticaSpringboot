@@ -1,7 +1,7 @@
 package com.api.tiendaOnline.controllers;
 
 import com.api.tiendaOnline.models.CategoryModel;
-import com.api.tiendaOnline.repositories.CategoryRepository;
+import com.api.tiendaOnline.models.ProductModel;
 import com.api.tiendaOnline.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/categories")
@@ -25,7 +25,7 @@ public class CategoryController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<CategoryModel> getCategoryById(Long id){
+    public ResponseEntity<CategoryModel> getCategoryById(@PathVariable("id") Long id){
         return categoryService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -52,5 +52,23 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Categoria no encontrada");
         }
+    }
+
+    @GetMapping("/{categoryId}/products")
+    public ResponseEntity<Set<ProductModel>> getProductsByCategory(@PathVariable("categoryId") Long categoryId) {
+        Set<ProductModel> products = categoryService.getProductsByCategory(categoryId);
+        return ResponseEntity.ok(products);
+    }
+
+    @PostMapping("/{categoryId}/products/{productId}")
+    public ResponseEntity<Void> addProductToCategory(@PathVariable("categoryId") Long categoryId, @PathVariable("productId") Long productId) {
+        categoryService.addProductToCategory(categoryId, productId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{categoryId}/products/{productId}")
+    public ResponseEntity<Void> removeProductFromCategory(@PathVariable("categoryId") Long categoryId, @PathVariable("productId") Long productId) {
+        categoryService.removeProductFromCategory(categoryId, productId);
+        return ResponseEntity.noContent().build();
     }
 }

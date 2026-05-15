@@ -23,11 +23,10 @@ public class OrderModel {
     @Positive(message = "El total de la orden debe ser un valor positivo")
     private Double total;
 
-    @NotBlank(message = "La fecha de la orden no puede estar vacía")
+    @NotNull(message = "La fecha de la orden no puede estar vacía")
     private LocalDate orderDate;
 
-    @NotBlank(message = "El estado de la orden no puede estar vacío")
+    @NotNull(message = "El estado de la orden no puede ser nulo")
     private String status;
-
 
 }

@@ -1,5 +1,7 @@
 package com.api.crudSinAyuda.services;
 
+import com.api.crudSinAyuda.dtos.UserRequestDTO;
+import com.api.crudSinAyuda.dtos.UserResponseDTO;
 import com.api.crudSinAyuda.exceptions.EmailAlreadyExistsException;
 import com.api.crudSinAyuda.exceptions.UserNotFoundException;
 import com.api.crudSinAyuda.models.UserModel;
@@ -15,22 +17,28 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public List<UserModel> getUsers(){
-        return (List<UserModel>) userRepository.findAll();
+    public List<UserResponseDTO> getUsers(){
+        List<UserModel> users = userRepository.findAll();
+        return users.stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public UserModel saveUser(UserModel user){
-        if(userRepository.findByEmail(user.getEmail()).isPresent()){
+    public UserResponseDTO saveUser(UserRequestDTO userDto){
+        if(userRepository.findByEmail(userDto.getEmail()).isPresent()){
             throw new EmailAlreadyExistsException("El email ya está registrado");
         }
-        return userRepository.save(user);
+        UserModel user = toEntity(userDto);
+        UserModel savedUser = userRepository.save(user);
+        return toResponse(savedUser);
     }
 
-    public Optional<UserModel> getById(Long id){
-        return userRepository.findById(id);
+    public Optional<UserResponseDTO> getById(Long id){
+        return userRepository.findById(id)
+                .map(this::toResponse);
     }
 
-    public UserModel updateById(UserModel request, Long id) {
+    public UserResponseDTO updateById(UserRequestDTO request, Long id) {
         UserModel user = userRepository.findById(id)
                 .orElseThrow(()-> new UserNotFoundException("Usuario con id " + id + " no encontrado"));
 
@@ -38,12 +46,13 @@ public class UserService {
         if (emailOwner.isPresent() && !emailOwner.get().getId().equals(id)){
             throw new EmailAlreadyExistsException("El email ya está registrado");
         }
+
         user.setFirstName(request.getFirstName());
         user.setLastName((request.getLastName()));
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
 
-        return userRepository.save(user);
+        return toResponse(userRepository.save(user));
     }
 
     public boolean deleteById(Long id){
@@ -54,4 +63,22 @@ public class UserService {
         return false;
     }
 
+    private UserModel toEntity(UserRequestDTO dto) {
+        UserModel user = new UserModel();
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+
+        return user;
+    }
+
+    private UserResponseDTO toResponse(UserModel user){
+        UserResponseDTO response = new UserResponseDTO();
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setEmail(user.getEmail());
+
+        return response;
+    }
 }

@@ -33,7 +33,7 @@ public class UserControllerTest {
     @MockitoBean
     UserService userService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private UserModel user;
 

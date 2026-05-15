@@ -25,4 +25,12 @@ public class OrderItemModel {
     @NotNull(message = "La cantidad del producto en la orden no puede ser nula")
     @Positive(message = "La cantidad del producto en la orden debe ser un valor positivo")
     private Integer quantity;
+
+    @NotNull
+    @Positive
+    private Double unitPrice;
+
+    @NotNull
+    @Positive
+    private Double subtotal;
 }
